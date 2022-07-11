@@ -1,0 +1,208 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  plus                                  |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Which of the steps to run
+castellatedMesh true;
+snap            true;
+addLayers       true;
+
+
+// Geometry. Definition of all surfaces. All surfaces are of class
+// searchableSurface.
+// Surfaces are used
+// - to specify refinement for any mesh cell intersecting it
+// - to specify refinement for any mesh cell inside/outside/near
+// - to 'snap' the mesh boundary to the surface
+geometry
+{
+
+    Plate.stl
+    {
+        type triSurfaceMesh;
+        name Plate;
+
+        patchInfo
+        {
+            type wall;
+        }
+    }
+
+    wallInlet.stl
+    {
+        type triSurfaceMesh;
+        name wallInlet;
+
+        patchInfo
+        {
+            type wall;
+        }
+    }
+
+    inletRefine
+    {
+        type searchableBox;
+        min (0.45 -0.1 -0.1);
+        max (0.8   0.1  0.1);
+    }
+
+};
+
+//// Optional: avoid patch-face merging. Allows mesh to be used for
+////           refinement/unrefinement
+mergePatchFaces off; // default on
+
+
+
+// Settings for the castellatedMesh generation.
+castellatedMeshControls
+{
+
+    // Refinement parameters
+    // ~~~~~~~~~~~~~~~~~~~~~
+    maxLocalCells 100000;
+    maxGlobalCells 2000000;
+    minRefinementCells 10;
+    maxLoadUnbalance 0.10;
+    nCellsBetweenLevels 2;
+
+    // Explicit feature edge refinement
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    features
+    (
+        {
+            file "wallInlet.eMesh";
+            level 3;
+        }
+
+    );
+
+
+
+    // Surface based refinement
+    // ~~~~~~~~~~~~~~~~~~~~~~~~
+    refinementSurfaces
+    {
+        Plate
+        {
+            level (3 3);
+            patchInfo
+            {
+                 type wall;
+            }
+         }
+
+         wallInlet
+         {
+             level (0 0);
+
+             patchInfo
+             {
+                 type wall;
+             }
+         }
+    }
+
+    // Resolve sharp angles on fridges
+    resolveFeatureAngle 30;
+
+
+    // Region-wise refinement
+    // ~~~~~~~~~~~~~~~~~~~~~~
+    refinementRegions
+    {
+
+        inletRefine
+        {
+            mode inside;
+            levels ((1e15 2));
+        }
+
+        Plate
+        {
+            mode distance;
+            levels ((0.02 2) (0.05 1));
+        }
+    }
+
+
+    // Mesh selection
+    // ~~~~~~~~~~~~~~
+    locationInMesh (-0.2 0 0);
+    allowFreeStandingZoneFaces true;
+}
+
+
+
+// Settings for the snapping.
+snapControls
+{
+    nSmoothPatch 3;
+    tolerance 2.0;
+    nSolveIter 300;
+    nRelaxIter 5;
+}
+
+
+
+// Settings for the layer addition.
+addLayersControls
+{
+    relativeSizes true;
+    layers
+    {
+        Plate
+        {
+            nSurfaceLayers 3;
+        }
+    }
+
+    expansionRatio 1.2;
+    finalLayerThickness 0.5;
+    minThickness 0.0001;
+    nGrow 0;
+
+    // Advanced settings
+    featureAngle 140;
+    nRelaxIter 5;
+    nSmoothSurfaceNormals 1;
+    nSmoothNormals 10;
+    nSmoothThickness 10;
+    maxFaceThicknessRatio 0.5;
+    maxThicknessToMedialRatio 0.3;
+    minMedialAxisAngle 90;
+    nBufferCellsNoExtrude 0;
+    nLayerIter 50;
+}
+
+
+
+// Generic mesh quality settings. At any undoable phase these determine
+// where to undo.
+meshQualityControls
+{
+    #include "meshQualityDict"
+
+    // Advanced
+    nSmoothScale 4;
+    errorReduction 0.75;
+}
+
+
+// Advanced
+mergeTolerance 1e-6;
+
+
+// ************************************************************************* //

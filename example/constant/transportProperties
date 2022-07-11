@@ -1,0 +1,77 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  8                                     |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      transportProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+transportModel  Newtonian;
+
+// Density:
+rho             rho [1 -3 0 0 0 0 0 ] 0.1;
+
+// Kinetic viscosity:
+nu              nu [0 2 -1 0 0 0 0 ] 10.0;
+
+// Nematic mobility.
+GammaQ          GammaQ [-1 1 1 0 0 0 0] 10e1;
+
+// Frank constant
+KQ              KQ [1 1 -2 0 0 0 0] 0.000055;
+
+// A2Q
+A2Q             A2Q [1 -1 -2 0 0 0 0] -0.001;
+
+// A4Q
+A4Q             A4Q [1 -1 -2 0 0 0 0] 0.001;
+
+AcQ		AcQ [1 -1 -2 0 0 0 0] 0;
+
+Sc      Sc  [0 0 0 0 0 0 0] 0;
+
+// Flow alignment parameter
+lambda          lambda [0 0 0 0 0 0 0] 0.99;
+
+// Substrate friction
+gammav          gammav [1 -3 -1 0 0 0 0] 0;
+
+// Active stress
+alp             alp [1 -1 -2 0 0 0 0] -10.0;
+alpGrad		alpGrad [1 1 -2 0 0 0 0] 0.0;
+
+// BackFlow.
+isBackFlow        isBackFlow [0 0 0 0 0 0 0] 0;
+
+// 
+isFlowAlignAddi        isFlowAlignAddi [0 0 0 0 0 0 0] 1;
+
+isAdveU       isAdveU [0 0 0 0 0 0 0] 1;
+
+isAdveQ       isAdveQ [0 0 0 0 0 0 0] 1;
+
+// Scalar field
+mPs     mPs [0 0 0 0 0 0 0] 0.1;
+
+aPs aPs [0 2 -1 0 0 0 0] -1;
+
+cPs     cPs [0 2 -1 0 0 0 0] 0.0;
+
+bPs     bPs [0 2 -1 0 0 0 0] 1.0;
+
+kPs		kPs [0 4 -1 0 0 0 0] 0.004;
+
+kPsStress kPsStress [1 1 -2 0 0 0 0] 0.004;
+
+isPsiAdve	isPsiAdve [0 0 0 0 0 0 0] 0;
+
+// ************************************************************************* //
